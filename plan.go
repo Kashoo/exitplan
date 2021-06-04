@@ -35,6 +35,7 @@ func NewPlanWithTimer(gradePeriod, timeout time.Duration) *ExecutionPlan {
 			syscall.SIGINT,
 			syscall.SIGTERM,
 			syscall.SIGHUP,
+			syscall.SIGKILL,
 		},
 		Timeout:       timeout,
 		GradePeriod:   gradePeriod,
@@ -108,6 +109,7 @@ func (p *ExecutionPlan) WaitWithChan(ctx context.Context) <-chan struct{} {
 
 		// Wait for an interrupt to be triggered.
 		<-s
+		log.Printf("received %s, shutting down", s)
 
 		// Indicate internally the app is going to shutdown and to not accept
 		//  and new connections.
