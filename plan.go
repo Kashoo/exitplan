@@ -2,7 +2,6 @@ package exitplan
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -112,15 +111,15 @@ func (p *ExecutionPlan) WaitWithChan(ctx context.Context) <-chan struct{} {
 			for s := range s {
 				switch s {
 				case syscall.SIGINT:
-					fmt.Println("received SIGINT, shutting down", s)
+					log.Println("received SIGINT, shutting down", s)
 				case syscall.SIGTERM:
-					fmt.Println("received SIGTERM, shutting down", s)
+					log.Println("received SIGTERM, shutting down", s)
 				case syscall.SIGHUP:
-					fmt.Println("received SIGHUP, shutting down", s)
+					log.Println("received SIGHUP, shutting down", s)
 				case syscall.SIGKILL:
-					fmt.Println("received SIGKILL, shutting down", s)
+					log.Println("received SIGKILL, shutting down", s)
 				default:
-					fmt.Println("other", s)
+					log.Println("other", s)
 				}
 			}
 		}()
