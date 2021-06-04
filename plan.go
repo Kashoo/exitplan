@@ -2,6 +2,7 @@ package exitplan
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -107,9 +108,25 @@ func (p *ExecutionPlan) WaitWithChan(ctx context.Context) <-chan struct{} {
 		// Set syscalls to listen for using the chan
 		signal.Notify(s, p.Signals...)
 
+		go func() {
+			for s := range s {
+				switch s {
+				case syscall.SIGINT:
+					fmt.Println("received SIGINT, shutting down", s)
+				case syscall.SIGTERM:
+					fmt.Println("received SIGTERM, shutting down", s)
+				case syscall.SIGHUP:
+					fmt.Println("received SIGHUP, shutting down", s)
+				case syscall.SIGKILL:
+					fmt.Println("received SIGKILL, shutting down", s)
+				default:
+					fmt.Println("other", s)
+				}
+			}
+		}()
+
 		// Wait for an interrupt to be triggered.
 		<-s
-		log.Printf("received %s, shutting down", s)
 
 		// Indicate internally the app is going to shutdown and to not accept
 		//  and new connections.
