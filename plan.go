@@ -108,19 +108,17 @@ func (p *ExecutionPlan) WaitWithChan(ctx context.Context) <-chan struct{} {
 		signal.Notify(s, p.Signals...)
 
 		// Wait for an interrupt to be triggered.
-		<-s
-
 		switch <-s {
 		case syscall.SIGINT:
-			log.Println("received SIGINT, shutting down", s)
+			log.Println("received SIGINT, shutting down")
 		case syscall.SIGTERM:
-			log.Println("received SIGTERM, shutting down", s)
+			log.Println("received SIGTERM, shutting down")
 		case syscall.SIGHUP:
-			log.Println("received SIGHUP, shutting down", s)
+			log.Println("received SIGHUP, shutting down")
 		case syscall.SIGKILL:
-			log.Println("received SIGKILL, shutting down", s)
+			log.Println("received SIGKILL, shutting down")
 		default:
-			log.Println("other", s)
+			log.Println("OTHER signal received, shutting down ", s)
 		}
 
 		// Indicate internally the app is going to shutdown and to not accept
