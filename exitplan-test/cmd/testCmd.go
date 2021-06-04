@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Kashoo/exitplan"
 	"github.com/gorilla/mux"
-	"github.com/nhalstead/exitplan"
 	"github.com/spf13/cobra"
 )
 

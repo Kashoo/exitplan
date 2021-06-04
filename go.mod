@@ -1,4 +1,4 @@
-module github.com/nhalstead/exitplan
+module github.com/Kashoo/exitplan
 
 go 1.14
 

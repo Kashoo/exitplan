@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	cmd2 "github.com/nhalstead/exitplan/exitplan-test/cmd"
+	cmd2 "github.com/Kashoo/exitplan/exitplan-test/cmd"
 )
 
 func main() {

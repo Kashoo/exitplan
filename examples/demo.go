@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Kashoo/exitplan"
 	"github.com/gorilla/mux"
-	"github.com/nhalstead/exitplan"
 )
 
 func main() {
