@@ -2,7 +2,7 @@ package exitplan
 
 import (
 	"context"
-	"log"
+	"github.com/micro/go-micro/v2/logger"
 	"net/http"
 	"os"
 	"os/signal"
@@ -110,29 +110,29 @@ func (p *ExecutionPlan) WaitWithChan(ctx context.Context) <-chan struct{} {
 		// Wait for an interrupt to be triggered.
 		switch <-s {
 		case syscall.SIGINT:
-			log.Println("received SIGINT, shutting down")
+			logger.Error("received SIGINT, shutting down")
 		case syscall.SIGTERM:
-			log.Println("received SIGTERM, shutting down")
+			logger.Error("received SIGTERM, shutting down")
 		case syscall.SIGHUP:
-			log.Println("received SIGHUP, shutting down")
+			logger.Error("received SIGHUP, shutting down")
 		case syscall.SIGKILL:
-			log.Println("received SIGKILL, shutting down")
+			logger.Error("received SIGKILL, shutting down")
 		default:
-			log.Println("OTHER signal received, shutting down ", s)
+			logger.Error("OTHER signal received, shutting down ", s)
 		}
 
 		// Indicate internally the app is going to shutdown and to not accept
 		//  and new connections.
-		log.Println("interrupt received...")
+		logger.Warn("interrupt received...")
 		p.isTerminating = true
 
 		// Allow for connections to drain.
 		time.Sleep(p.GradePeriod)
 
 		// Set timeout for the operations to complete and prevent system hang or dropped connections
-		log.Println("shutting down")
+		logger.Warn("shutting down")
 		timeoutFunc := time.AfterFunc(p.Timeout, func() {
-			log.Printf("timeout %d ms has been elapsed, force exit", p.Timeout.Milliseconds())
+			logger.Error("timeout %d ms has been elapsed, force exit", p.Timeout.Milliseconds())
 			os.Exit(0)
 		})
 
@@ -146,12 +146,12 @@ func (p *ExecutionPlan) WaitWithChan(ctx context.Context) <-chan struct{} {
 			go func(innerKey string, innerOp ExitOperation) {
 				defer wg.Done()
 
-				log.Printf("disposing: %s", innerKey)
+				logger.Warnf("disposing: %s", innerKey)
 				if err := innerOp(ctx); err != nil {
-					log.Printf("%s: dispose failed: %s", innerKey, err.Error())
+					logger.Warnf("%s: dispose failed: %s", innerKey, err.Error())
 					return
 				}
-				log.Printf("%s was disposed gracefully", innerKey)
+				logger.Warnf("%s was disposed gracefully", innerKey)
 			}(key, op)
 		}
 
@@ -161,10 +161,10 @@ func (p *ExecutionPlan) WaitWithChan(ctx context.Context) <-chan struct{} {
 		// Final cleanup callback
 		if p.finalCallback != nil {
 			if err := p.finalCallback(ctx); err != nil {
-				log.Printf("final: dispose failed: %s", err.Error())
+				logger.Warnf("final: dispose failed: %s", err.Error())
 				return
 			}
-			log.Println("final was disposed gracefully")
+			logger.Warnf("final was disposed gracefully")
 		}
 
 		close(sigChannel)
