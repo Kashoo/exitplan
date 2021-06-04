@@ -107,6 +107,9 @@ func (p *ExecutionPlan) WaitWithChan(ctx context.Context) <-chan struct{} {
 		// Set syscalls to listen for using the chan
 		signal.Notify(s, p.Signals...)
 
+		// Wait for an interrupt to be triggered.
+		<-s
+
 		go func() {
 			for s := range s {
 				switch s {
@@ -123,9 +126,6 @@ func (p *ExecutionPlan) WaitWithChan(ctx context.Context) <-chan struct{} {
 				}
 			}
 		}()
-
-		// Wait for an interrupt to be triggered.
-		<-s
 
 		// Indicate internally the app is going to shutdown and to not accept
 		//  and new connections.
